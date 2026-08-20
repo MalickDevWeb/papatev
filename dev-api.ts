@@ -1,4 +1,4 @@
-import app from "./api/index.ts";
+import app from "./legacy-api/index.ts";
 
 const port = Number(process.env.API_PORT || 3001);
 
