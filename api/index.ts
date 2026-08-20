@@ -417,6 +417,7 @@ const inMemoryData: {
   courses: any[];
   bookings: any[];
   partners: any[];
+  providers: any[];
   users: any[];
   logs: any[];
   trainerStudents: any[];
@@ -443,6 +444,7 @@ const inMemoryData: {
   courses: [],
   bookings: [],
   partners: [],
+  providers: [],
   users: [],
   logs: [
     {
@@ -1433,11 +1435,20 @@ app.post("/api/marketplace/book", async (req, res) => {
     const { neonDbService } = await import("../src/db/neon-service.ts");
     await neonDbService.saveBooking({
       id: bookingId,
-      customerId: booking.clientId || "GUEST",
-      providerId: booking.proId || "PRO-UNKNOWN",
-      serviceType: booking.service || "Intervention Technique",
-      scheduledDate: booking.date || "Dès que possible",
-      status: "CONFIRMEE"
+      clientId: booking.clientId || "GUEST",
+      clientName: booking.clientName || "Client",
+      clientPhone: booking.clientPhone || "",
+      proId: booking.proId || "PRO-UNKNOWN",
+      proName: booking.proName || "Technicien",
+      proCategory: booking.proCategory || booking.service || "Intervention Technique",
+      date: booking.date || new Date().toISOString().split("T")[0],
+      time: booking.time || "10:00",
+      region: booking.region || booking.address || "Dakar",
+      address: booking.address || booking.region || "Dakar",
+      description: booking.description || booking.service || "Intervention Technique",
+      estimatedFCFA: Number(booking.estimatedFCFA || booking.amountFCFA || 50000),
+      status: "CONFIRMEE",
+      createdAt: new Date().toISOString()
     });
   } catch (e) {
     console.warn("Neon DB booking save error:", e);
@@ -1473,13 +1484,15 @@ app.post("/api/checkout/process", validateBody(schemas.checkoutProcess), async (
     const { neonDbService } = await import("../src/db/neon-service.ts");
     await neonDbService.saveOrder({
       id: orderId,
-      customerId: "GUEST_CHECKOUT",
-      totalFCFA: newOrder.totalAmountFCFA,
-      status: "PAYEE",
+      userId: "GUEST_CHECKOUT",
+      userName: newOrder.customerName,
       items: items || [],
-      deliveryAddress: newOrder.shippingCity,
-      contactPhone: newOrder.customerPhone,
-      paymentMethod: method
+      totalFCFA: newOrder.totalAmountFCFA,
+      paymentMethod: method,
+      paymentStatus: "SUCCES",
+      shippingAddress: newOrder.shippingCity,
+      region: newOrder.shippingCity,
+      createdAt: newOrder.createdAt
     });
   } catch (e) {
     console.warn("Neon DB checkout save error:", e);
