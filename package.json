@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -k -n API,NEXT -c blue,green \"npm:dev:api\" \"next dev\"",
+    "dev:api": "tsx dev-api.ts",
     "dev:old": "tsx server.ts",
     "build": "next build",
     "build:old": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
@@ -47,6 +48,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.1",
     "esbuild": "^0.25.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
